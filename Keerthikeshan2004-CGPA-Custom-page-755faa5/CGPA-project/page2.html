@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Custom Subject</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="Custom-page.html">
+            <button class="back-button" id="back-button">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button></a>
+            <h1 class="page-title">Add Custom Subject</h1>
+        </div>
+        <form action="page1.html" method="get">
+        <div class="custom-form">
+            
+            <div class="form-group">
+                <label for="subject-name" class="form-label">Subject Name</label>
+                <input type="text" id="subject" class="form-input" placeholder="Enter subject name" name="subname">
+            </div>
+            <div class="form-group">
+                <label for="subject-code" class="form-label">Subject Code</label>
+                <input type="text" id="code" class="form-input" placeholder="Enter subject code" name="code">
+            </div>
+            <div class="form-group">
+                <label for="credit" class="form-label">Credit</label>
+                <input type="number" id="credits" class="form-input" placeholder="Enter credit value" min="1" max="10" name="credit">
+            </div >
+                <label for="elective">Elective Type:</label>
+                <select id="elective" class="styled-select">
+                <option>Select subject type</option>
+                <option value="Open Elective">Open Elective</option>
+                <option value="Program Elective">Program Elective</option>
+                </select><br><br>
+               <div id="btn"><button onclick="saveData()" id="add-button"><i class="fa-solid fa-circle-plus" style="margin-right: 5px;"></i>Add Subject</button></div>
+            
+        </div>
+        </form>
+    </div>
+    <!-- <script src="script.js"></script> -->
+     <script>
+    function saveData() {
+      const subject = document.getElementById("subject").value;
+      const code = document.getElementById("code").value;
+      const credits = document.getElementById("credits").value;
+      const elective = document.getElementById("elective").value;
+
+      // Create object
+      const entry = {
+        subject: subject,
+        code: code,
+        credits: credits,
+        elective: elective
+      };
+
+      // Get previous subjects
+      let subjects = JSON.parse(localStorage.getItem("subjects")) || [];
+
+      // Add new entry
+      subjects.push(entry);
+      localStorage.setItem("subjects", JSON.stringify(subjects));
+
+      // Redirect
+      window.location.href = "page1.html";
+    }
+  </script>
+</body>
+</html>

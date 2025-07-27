@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CGPA Calculator - Main Page</title>
+    <link rel="stylesheet" href="page1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="selected-subjects-container">
+            <h2>Selected Subjects</h2>
+            <div id="selected-subjects-list" class="subjects-list" style="font-weight: bold;">
+                <!-- Subjects will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container2">
+        <div class="selected-subjects-container"> <!--Id missing error-->
+            <h3>Custom Subjects</h3>
+            <div id="subjectList" class="subjects-list" style="font-weight: bold;">
+                <!-- Custom subjects will render here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const electiveSubjects = JSON.parse(localStorage.getItem('selectedSubjects') || '[]');
+            const customSubjects = JSON.parse(localStorage.getItem('customSubjects') || '[]');
+            const allSubjects = [...electiveSubjects, ...customSubjects];
+            const container = document.getElementById('selected-subjects-list');
+
+            console.log('LocalStorage contents:', JSON.stringify(localStorage, null, 2));
+            console.log('Found subjects:', allSubjects);
+
+            if (allSubjects.length === 0) {
+                container.innerHTML = '<p class="no-subjects">No subjects selected yet</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            allSubjects.forEach((subject, index) => {
+                const subjectDiv = document.createElement('div');
+                subjectDiv.className = 'subject-item';
+
+                const typeText = subject.isCustom ? 'Custom Subject' :
+                    subject.type === 'open' ? 'Open Elective' :
+                    subject.type === 'program' ? 'Program Elective' : 'Elective';
+
+                subjectDiv.innerHTML = `
+                    <span class="subject-info">
+                        ${subject.name || subject.subject} (${subject.code}) - ${subject.credit || subject.credits} credits (${typeText})
+                    </span>
+                    <button class="remove-subject" data-index="${index}" data-type="${subject.isCustom ? 'custom' : 'elective'}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+
+                container.appendChild(subjectDiv);
+            });
+
+            document.querySelectorAll('.remove-subject').forEach(button => {
+                button.addEventListener('click', function () {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const type = this.getAttribute('data-type');
+
+                    if (type === 'elective') {
+                        const updated = JSON.parse(localStorage.getItem('selectedSubjects') || '[]');
+                        updated.splice(index, 1);
+                        localStorage.setItem('selectedSubjects', JSON.stringify(updated));
+                    } else {
+                        const updated = JSON.parse(localStorage.getItem('customSubjects') || '[]');
+                        updated.splice(index, 1);
+                        localStorage.setItem('customSubjects', JSON.stringify(updated));
+                    }
+
+                    location.reload(); // Refresh to re-render
+                });
+            });
+        });
+
+        // Render legacy "subjects" array into subjectList (container2)
+        let subjects = JSON.parse(localStorage.getItem("subjects")) || [];
+
+        function renderSubjects() {
+            const container = document.getElementById("subjectList");
+            container.innerHTML = "";
+
+            subjects.forEach((sub, index) => {
+                const div = document.createElement("div");
+                div.className = "subject-card";
+
+                div.innerHTML = `
+                    <div class="subject-info">
+                        <div class="subject-title">${sub.subject} (${sub.code})</div>
+                        <div class="subject-meta">${sub.credits} credits · ${sub.elective}</div>
+                    </div>
+                    <div class="remove" onclick="removeSubject(${index})"><i class="fas fa-times"></i></div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        function removeSubject(index) {
+            subjects.splice(index, 1);
+            localStorage.setItem("subjects", JSON.stringify(subjects));
+            renderSubjects();
+        }
+
+        renderSubjects();
+    </script>
+</body>
+</html>
